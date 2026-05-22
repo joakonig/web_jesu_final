@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SponsorOS · SponsKit Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:      #0F1F3D;
+  --navy-mid:  #162844;
+  --navy-light:#1E3A5F;
+  --blue:      #1A56DB;
+  --blue-bg:   #EEF4FF;
+  --blue-mid:  #BFDBFE;
+  --green:     #16A34A;
+  --green-bg:  #DCFCE7;
+  --amber:     #D97706;
+  --amber-bg:  #FEF3C7;
+  --red:       #DC2626;
+  --red-bg:    #FEE2E2;
+  --purple:    #7C3AED;
+  --purple-bg: #EDE9FE;
+  --text:      #0F172A;
+  --text-mid:  #475569;
+  --text-light:#94A3B8;
+  --surface:   #F8FAFC;
+  --border:    #E2E8F0;
+  --white:     #FFFFFF;
+  --sidebar-w: 220px;
+  --topbar-h:  52px;
+  --radius:    10px;
+  --radius-lg: 14px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: 'DM Sans', sans-serif; color: var(--text); background: var(--surface); }
+
+/* ── SHELL ─────────────────────────────────────────────────── */
+.shell { display: flex; height: 100vh; overflow: hidden; }
+
+/* ── SIDEBAR ───────────────────────────────────────────────── */
+.sidebar {
+  width: var(--sidebar-w); flex-shrink: 0;
+  background: var(--navy);
+  display: flex; flex-direction: column;
+  overflow-y: auto; overflow-x: hidden;
+  position: relative; z-index: 10;
+}
+.sidebar-logo {
+  padding: 16px 14px 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  display: flex; align-items: center; gap: 10px;
+  text-decoration: none;
+}
+.logo-mark {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: var(--blue); flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif; font-weight: 800; font-size: 15px; color: #fff;
+}
+.logo-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px; color: #fff; }
+.logo-badge {
+  font-size: 9px; color: rgba(255,255,255,0.4);
+  font-weight: 400; margin-top: 1px; letter-spacing: 0.2px;
+}
+.nav-section { padding: 14px 10px 4px; }
+.nav-label {
+  font-size: 9px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 1px; color: rgba(255,255,255,0.25);
+  padding: 0 6px; margin-bottom: 4px;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 9px;
+  padding: 7px 8px; border-radius: 8px;
+  font-size: 13px; color: rgba(255,255,255,0.55);
+  text-decoration: none; cursor: pointer;
+  transition: all 0.12s; margin-bottom: 1px;
+}
+.nav-item:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.85); }
+.nav-item.active { background: var(--blue); color: #fff; }
+.nav-item.parent-active { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.9); }
+.nav-icon { font-size: 15px; width: 18px; text-align: center; flex-shrink: 0; }
+.nav-badge {
+  margin-left: auto; font-size: 10px; font-weight: 600;
+  padding: 1px 6px; border-radius: 10px;
+}
+.nav-badge.green { background: rgba(22,163,74,0.2); color: #4ADE80; }
+.nav-badge.amber { background: rgba(217,119,6,0.2); color: #FCD34D; }
+
+/* SponsKit sub-items */
+.nav-sub { padding-left: 18px; }
+.nav-sub .nav-item { font-size: 12px; padding: 5px 8px; }
+
+.sidebar-bottom {
+  margin-top: auto; padding: 12px 10px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+.user-row {
+  display: flex; align-items: center; gap: 9px;
+  padding: 7px 8px; border-radius: 8px;
+  cursor: pointer; transition: background 0.12s;
+}
+.user-row:hover { background: rgba(255,255,255,0.06); }
+.user-avatar {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: rgba(26,86,219,0.4);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; color: #93C5FD; flex-shrink: 0;
+}
+.user-name { font-size: 12px; color: rgba(255,255,255,0.8); font-weight: 500; }
+.user-club { font-size: 10px; color: rgba(255,255,255,0.35); }
+
+/* ── MAIN AREA ─────────────────────────────────────────────── */
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+
+/* ── TOPBAR ────────────────────────────────────────────────── */
+.topbar {
+  height: var(--topbar-h); flex-shrink: 0;
+  background: var(--white); border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; padding: 0 20px; gap: 12px;
+}
+.breadcrumb {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 13px; color: var(--text-light);
+}
+.breadcrumb span { color: var(--text); font-weight: 500; }
+.breadcrumb-sep { font-size: 10px; }
+.topbar-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+.tb-btn {
+  width: 32px; height: 32px; border-radius: 8px;
+  border: 1px solid var(--border); background: var(--white);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 15px; color: var(--text-mid); transition: all 0.12s;
+}
+.tb-btn:hover { background: var(--surface); }
+.tb-btn.notif { position: relative; }
+.notif-dot {
+  position: absolute; top: 6px; right: 6px;
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--red); border: 1.5px solid var(--white);
+}
+.btn-primary {
+  background: var(--blue); color: #fff;
+  border: none; padding: 7px 16px; border-radius: 8px;
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  display: flex; align-items: center; gap: 6px; transition: all 0.12s;
+  text-decoration: none;
+}
+.btn-primary:hover { background: #1547C0; }
+
+/* ── PAGE CONTENT ──────────────────────────────────────────── */
+.page-content { flex: 1; overflow-y: auto; }
+
+/* ── MODULE HERO (inside SaaS) ─────────────────────────────── */
+.module-hero {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+  padding: 40px 32px 44px; position: relative; overflow: hidden;
+}
+.module-hero::after {
+  content: '';
+  position: absolute; right: -60px; top: -60px;
+  width: 320px; height: 320px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(26,86,219,0.18) 0%, transparent 70%);
+  pointer-events: none;
+}
+.module-path {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px; color: rgba(255,255,255,0.35);
+  margin-bottom: 20px;
+}
+.module-path span { color: rgba(255,255,255,0.55); }
+.module-path .cur { color: rgba(255,255,255,0.85); font-weight: 500; }
+.module-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(26,86,219,0.25); border: 1px solid rgba(26,86,219,0.4);
+  color: #93C5FD; border-radius: 6px; padding: 3px 10px;
+  font-size: 11px; font-weight: 500; margin-bottom: 14px;
+}
+.module-title {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(24px, 3vw, 36px); font-weight: 800;
+  color: #fff; letter-spacing: -0.8px; margin-bottom: 10px; line-height: 1.15;
+}
+.module-title em { font-style: normal; color: #60A5FA; }
+.module-desc {
+  font-size: 15px; color: rgba(255,255,255,0.55);
+  max-width: 520px; line-height: 1.65; margin-bottom: 28px;
+}
+.hero-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.btn-hero {
+  background: var(--blue); color: #fff; border: none;
+  padding: 10px 22px; border-radius: 8px; font-size: 14px; font-weight: 600;
+  cursor: pointer; transition: all 0.12s; text-decoration: none; display: inline-flex; align-items: center; gap: 7px;
+}
+.btn-hero:hover { background: #1547C0; transform: translateY(-1px); }
+.btn-hero-ghost {
+  background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.8);
+  border: 1px solid rgba(255,255,255,0.15);
+  padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: 500;
+  cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 7px;
+  transition: all 0.12s;
+}
+.btn-hero-ghost:hover { background: rgba(255,255,255,0.13); }
+.hero-metrics {
+  display: flex; gap: 32px; margin-top: 32px;
+  padding-top: 28px; border-top: 1px solid rgba(255,255,255,0.08); flex-wrap: wrap;
+}
+.hm-item {}
+.hm-val { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; color: #fff; }
+.hm-label { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 2px; }
+
+/* ── SECTIONS INSIDE PLATFORM ──────────────────────────────── */
+.inner-section { padding: 32px 32px 0; }
+.inner-section:last-child { padding-bottom: 40px; }
+.section-header { margin-bottom: 20px; }
+.section-title {
+  font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700;
+  color: var(--navy); letter-spacing: -0.3px;
+}
+.section-sub { font-size: 13px; color: var(--text-mid); margin-top: 4px; }
+.divider { height: 1px; background: var(--border); margin: 32px 32px 0; }
+
+/* ── VALUE CARDS ───────────────────────────────────────────── */
+.value-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+.val-card {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 20px;
+  transition: all 0.15s;
+}
+.val-card:hover { border-color: var(--blue-mid); box-shadow: 0 4px 16px rgba(26,86,219,0.07); }
+.val-icon {
+  width: 36px; height: 36px; border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; margin-bottom: 12px;
+}
+.val-card h4 { font-size: 14px; font-weight: 600; color: var(--navy); margin-bottom: 6px; }
+.val-card p { font-size: 12px; color: var(--text-mid); line-height: 1.55; }
+
+/* ── HOW IT WORKS ──────────────────────────────────────────── */
+.steps-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.step-card {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 20px; position: relative;
+}
+.step-num {
+  font-family: 'Syne', sans-serif; font-size: 36px; font-weight: 800;
+  color: var(--blue-bg); line-height: 1; margin-bottom: 12px;
+}
+.step-badge {
+  position: absolute; top: 14px; right: 14px;
+  font-size: 9px; font-weight: 600; padding: 2px 7px; border-radius: 6px;
+  background: var(--blue-bg); color: var(--blue);
+}
+.step-card h4 { font-size: 13px; font-weight: 600; color: var(--navy); margin-bottom: 6px; }
+.step-card p { font-size: 12px; color: var(--text-mid); line-height: 1.55; }
+
+/* ── CATALOG TABS ──────────────────────────────────────────── */
+.cat-tabs { display: flex; gap: 6px; margin-bottom: 18px; flex-wrap: wrap; }
+.cat-tab {
+  padding: 6px 14px; border-radius: 7px; font-size: 12px; font-weight: 500;
+  border: 1px solid var(--border); background: var(--white);
+  color: var(--text-mid); cursor: pointer; transition: all 0.12s;
+}
+.cat-tab.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+
+/* ── PRODUCT GRID ──────────────────────────────────────────── */
+.products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+.product-card {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); overflow: hidden; transition: all 0.15s;
+}
+.product-card:hover { border-color: var(--blue-mid); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(26,86,219,0.09); }
+.product-card.featured { border-color: var(--blue); border-width: 1.5px; }
+.prod-img {
+  height: 130px; background: var(--surface);
+  display: flex; align-items: center; justify-content: center; font-size: 50px;
+  position: relative;
+}
+.feat-badge {
+  position: absolute; top: 10px; right: 10px;
+  background: var(--blue); color: #fff;
+  font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 5px;
+}
+.prod-body { padding: 16px 18px; }
+.prod-cat { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-light); margin-bottom: 4px; }
+.prod-name { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+.prod-desc { font-size: 12px; color: var(--text-mid); line-height: 1.55; margin-bottom: 12px; }
+.prod-includes { display: flex; flex-direction: column; gap: 4px; margin-bottom: 14px; }
+.inc-item { font-size: 12px; color: var(--text-mid); display: flex; align-items: flex-start; gap: 6px; }
+.inc-item::before { content: '✓'; color: var(--green); font-weight: 700; font-size: 11px; margin-top: 1px; flex-shrink: 0; }
+.prod-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 12px; border-top: 1px solid var(--border); }
+.prod-price { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; color: var(--navy); }
+.prod-price small { font-size: 11px; font-weight: 400; color: var(--text-light); }
+.btn-order {
+  background: var(--blue); color: #fff; border: none;
+  padding: 7px 14px; border-radius: 7px; font-size: 12px; font-weight: 600;
+  cursor: pointer; transition: all 0.12s;
+}
+.btn-order:hover { background: #1547C0; }
+.product-card.featured .prod-price { color: var(--blue); }
+
+/* ── MODAL ─────────────────────────────────────────────────── */
+.modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(15,31,61,0.55); z-index: 999;
+  align-items: center; justify-content: center; padding: 20px;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--white); border-radius: var(--radius-lg);
+  max-width: 700px; width: 100%; max-height: 90vh; overflow-y: auto;
+}
+.modal-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 24px; border-bottom: 1px solid var(--border);
+}
+.modal-head h3 { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; color: var(--navy); }
+.modal-close {
+  width: 30px; height: 30px; border-radius: 7px; border: 1px solid var(--border);
+  background: var(--surface); cursor: pointer; font-size: 14px;
+  display: flex; align-items: center; justify-content: center; color: var(--text-mid);
+}
+.modal-body { padding: 24px; display: grid; grid-template-columns: 1fr 1.1fr; gap: 24px; }
+.modal-img-area {
+  background: var(--surface); border-radius: var(--radius);
+  display: flex; align-items: center; justify-content: center; font-size: 72px; aspect-ratio: 1;
+}
+.modal-info .modal-cat { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-light); margin-bottom: 6px; }
+.modal-info .modal-price { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; color: var(--navy); margin: 10px 0; }
+.modal-info .modal-price small { font-size: 13px; font-weight: 400; color: var(--text-light); }
+.modal-info .modal-desc { font-size: 13px; color: var(--text-mid); line-height: 1.65; margin-bottom: 16px; }
+.modal-info h5 { font-size: 12px; font-weight: 600; color: var(--navy); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.3px; }
+.modal-info ul { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+.modal-info li { font-size: 12px; color: var(--text-mid); display: flex; align-items: flex-start; gap: 7px; }
+.modal-info li::before { content: '✓'; color: var(--green); font-weight: 700; flex-shrink: 0; }
+.modal-foot {
+  padding: 16px 24px; border-top: 1px solid var(--border);
+  display: flex; gap: 10px;
+}
+.btn-ghost {
+  background: var(--surface); color: var(--text); border: 1px solid var(--border);
+  padding: 9px 18px; border-radius: 8px; font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: all 0.12s;
+}
+.btn-ghost:hover { border-color: var(--blue-mid); }
+
+/* ── CONTACT FORM ──────────────────────────────────────────── */
+.contact-grid { display: grid; grid-template-columns: 1fr 1.3fr; gap: 32px; }
+.contact-info { display: flex; flex-direction: column; gap: 20px; }
+.ci-item { display: flex; gap: 12px; align-items: flex-start; }
+.ci-icon {
+  width: 36px; height: 36px; background: var(--blue-bg); border-radius: 9px;
+  display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0;
+}
+.ci-item h5 { font-size: 13px; font-weight: 600; color: var(--navy); margin-bottom: 3px; }
+.ci-item p, .ci-item a { font-size: 12px; color: var(--text-mid); text-decoration: none; }
+.ci-item a:hover { color: var(--blue); }
+.req-box {
+  background: var(--white); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 16px 18px;
+}
+.req-box h5 { font-size: 12px; font-weight: 600; color: var(--navy); margin-bottom: 10px; }
+.req-box ul { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+.req-box li { font-size: 12px; color: var(--text-mid); display: flex; align-items: flex-start; gap: 7px; }
+.req-box li::before { content: '✓'; color: var(--green); font-weight: 700; flex-shrink: 0; }
+.contact-form-box { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.form-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; }
+.form-group label { font-size: 12px; font-weight: 500; color: var(--text); }
+.form-group label .req { color: var(--red); margin-left: 2px; }
+.form-group label .opt { font-size: 10px; color: var(--text-light); font-weight: 400; }
+.form-group input, .form-group select, .form-group textarea {
+  border: 1px solid var(--border); border-radius: 7px;
+  padding: 8px 12px; font-size: 13px;
+  font-family: 'DM Sans', sans-serif; color: var(--text);
+  background: var(--white); transition: border-color 0.12s; outline: none;
+  appearance: none; -webkit-appearance: none;
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--blue); }
+.form-group input::placeholder, .form-group textarea::placeholder { color: var(--text-light); }
+.form-group textarea { resize: vertical; min-height: 80px; }
+.form-note { font-size: 11px; color: var(--text-light); margin-bottom: 12px; }
+.form-note a { color: var(--blue); }
+.form-success { display: none; text-align: center; padding: 32px 24px; }
+.form-success h3 { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; color: var(--navy); margin: 12px 0 8px; }
+.form-success p { font-size: 13px; color: var(--text-mid); }
+
+/* ── MOBILE SIDEBAR ────────────────────────────────────────── */
+.mobile-topbar {
+  display: none; height: 52px; background: var(--navy);
+  align-items: center; padding: 0 16px; gap: 12px; flex-shrink: 0;
+}
+.mobile-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 16px; color: #fff; }
+.hamburger-btn { margin-left: auto; background: none; border: none; cursor: pointer; padding: 4px; }
+.hamburger-btn span { display: block; width: 20px; height: 2px; background: rgba(255,255,255,0.7); margin: 4px 0; border-radius: 2px; transition: all 0.2s; }
+.sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 19; }
+.sidebar-overlay.open { display: block; }
+
+@media (max-width: 860px) {
+  .sidebar { position: fixed; left: -100%; top: 0; bottom: 0; z-index: 20; transition: left 0.25s ease; }
+  .sidebar.open { left: 0; }
+  .mobile-topbar { display: flex; }
+  .modal-body { grid-template-columns: 1fr; }
+  .contact-grid { grid-template-columns: 1fr; }
+  .steps-row { grid-template-columns: 1fr 1fr; }
+  .form-row { grid-template-columns: 1fr; }
+}
+@media (max-width: 480px) {
+  .steps-row { grid-template-columns: 1fr; }
+  .hero-metrics { gap: 20px; }
+  .inner-section { padding: 24px 16px 0; }
+  .module-hero { padding: 28px 16px 32px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Mobile top bar -->
+<div class="mobile-topbar">
+  <div class="logo-mark" style="width:28px;height:28px;font-size:13px">S</div>
+  <span class="mobile-logo">SponsorOS</span>
+  <button class="hamburger-btn" id="hamburgerBtn" aria-label="Abrir menú">
+    <span></span><span></span><span></span>
+  </button>
+</div>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar" aria-label="Navegación de la plataforma">
+    <a href="#" class="sidebar-logo">
+      <div class="logo-mark">S</div>
+      <div>
+        <div class="logo-name">SponsorOS</div>
+        <div class="logo-badge">Plataforma de Patrocinios</div>
+      </div>
+    </a>
+
+    <div class="nav-section">
+      <div class="nav-label">Principal</div>
+      <a class="nav-item" href="#inicio">
+        <span class="nav-icon">⊞</span>Dashboard
+      </a>
+      <a class="nav-item" href="#">
+        <span class="nav-icon">◈</span>Mis Patrocinios
+        <span class="nav-badge green">8</span>
+      </a>
+      <a class="nav-item" href="#">
+        <span class="nav-icon">◻</span>Contratos
+      </a>
+      <a class="nav-item" href="#">
+        <span class="nav-icon">△</span>Directivos
+      </a>
+      <a class="nav-item" href="#">
+        <span class="nav-icon">○</span>Analytics
+      </a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">SponsKit · Marketplace</div>
+      <a class="nav-item active" href="#inicio">
+        <span class="nav-icon">🛍</span>Marketplace
+      </a>
+      <div class="nav-sub">
+        <a class="nav-item parent-active" href="#catalogo">
+          <span class="nav-icon">◽</span>Catálogo
+        </a>
+        <a class="nav-item" href="#">
+          <span class="nav-icon">◽</span>Mis Pedidos
+          <span class="nav-badge amber">3</span>
+        </a>
+        <a class="nav-item" href="#">
+          <span class="nav-icon">◽</span>Mis Diseños
+        </a>
+        <a class="nav-item" href="#">
+          <span class="nav-icon">◽</span>Facturas
+        </a>
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Config</div>
+      <a class="nav-item" href="#">
+        <span class="nav-icon">⚙</span>Ajustes
+      </a>
+      <a class="nav-item" href="#contacto">
+        <span class="nav-icon">?</span>Soporte
+      </a>
+    </div>
+
+    <div class="sidebar-bottom">
+      <div class="user-row">
+        <div class="user-avatar">AG</div>
+        <div>
+          <div class="user-name">Ana García</div>
+          <div class="user-club">Real Madrid CF · Admin</div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div class="breadcrumb">
+        <span>SponsorOS</span>
+        <span class="breadcrumb-sep">›</span>
+        <span>SponsKit</span>
+        <span class="breadcrumb-sep">›</span>
+        <span>Marketplace</span>
+      </div>
+      <div class="topbar-right">
+        <button class="tb-btn" aria-label="Buscar">🔍</button>
+        <button class="tb-btn notif" aria-label="Notificaciones">
+          🔔<span class="notif-dot"></span>
+        </button>
+        <a href="#contacto" class="btn-primary">+ Nuevo pedido</a>
+      </div>
+    </div>
+
+    <!-- PAGE CONTENT -->
+    <div class="page-content" id="inicio">
+
+      <!-- MODULE HERO -->
+      <div class="module-hero">
+        <div class="module-path">
+          <span>SponsorOS</span>
+          <span class="breadcrumb-sep">›</span>
+          <span class="cur">SponsKit Marketplace</span>
+        </div>
+        <div class="module-badge">⚡ Módulo integrado · SponsKit</div>
+        <h1 class="module-title">El patrocinio firmado.<br><em>El kit, enviado.</em></h1>
+        <p class="module-desc">Diseña, personaliza y envía kits físicos premium a tus patrocinadores directamente desde la plataforma. Sin stock, sin logística manual, sin salir de SponsorOS.</p>
+        <div class="hero-actions">
+          <a href="#catalogo" class="btn-hero">Ver catálogo de kits →</a>
+          <a href="#como-funciona" class="btn-hero-ghost">Cómo funciona</a>
+        </div>
+        <div class="hero-metrics">
+          <div class="hm-item"><div class="hm-val">1 click</div><div class="hm-label">Desde contrato firmado hasta kit enviado</div></div>
+          <div class="hm-item"><div class="hm-val">48h</div><div class="hm-label">Producción y entrega en España</div></div>
+          <div class="hm-item"><div class="hm-val">0€</div><div class="hm-label">Inversión en stock o almacén</div></div>
+          <div class="hm-item"><div class="hm-val">1to1</div><div class="hm-label">Caja personalizada con nombre del receptor</div></div>
+        </div>
+      </div>
+
+      <!-- VALUE PROPS -->
+      <div class="inner-section">
+        <div class="section-header">
+          <div class="section-title">¿Por qué usar SponsKit?</div>
+          <div class="section-sub">Gestiona toda la hospitalidad de patrocinio sin salir de tu plataforma SponsorOS.</div>
+        </div>
+        <div class="value-grid">
+          <div class="val-card">
+            <div class="val-icon" style="background:#EEF4FF">🔗</div>
+            <h4>Integración phygital</h4>
+            <p>Firma el contrato en SponsorOS y lanza el kit físico en el mismo flujo. Todo automatizado.</p>
+          </div>
+          <div class="val-card">
+            <div class="val-icon" style="background:#DCFCE7">👤</div>
+            <h4>Personalización 1to1</h4>
+            <p>Cada caja lleva el nombre del directivo receptor. Los datos ya están en la plataforma.</p>
+          </div>
+          <div class="val-card">
+            <div class="val-icon" style="background:#FEF3C7">📦</div>
+            <h4>Sin stock ni almacén</h4>
+            <p>Modelo bajo demanda con proveedores locales. SponsKit produce y envía directamente.</p>
+          </div>
+          <div class="val-card">
+            <div class="val-icon" style="background:#F5F3FF">📡</div>
+            <h4>NFC y accesos VIP</h4>
+            <p>Acreditaciones con chip NFC/RFID configurables desde la plataforma para zonas VIP.</p>
+          </div>
+          <div class="val-card">
+            <div class="val-icon" style="background:#FEE2E2">🚚</div>
+            <h4>Logística gestionada</h4>
+            <p>GLS, DHL y Correos Express integrados. Tracking en tiempo real sin salir de SponsorOS.</p>
+          </div>
+          <div class="val-card">
+            <div class="val-icon" style="background:#ECFDF5">📊</div>
+            <h4>Centro de beneficios</h4>
+            <p>Transforma la gestión de regalos en un módulo con margen transaccional para el club.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- HOW IT WORKS -->
+      <div class="inner-section" id="como-funciona">
+        <div class="section-header">
+          <div class="section-title">De contrato firmado a kit entregado</div>
+          <div class="section-sub">4 pasos desde SponsorOS, sin gestiones externas.</div>
+        </div>
+        <div class="steps-row">
+          <div class="step-card">
+            <span class="step-badge">Automático</span>
+            <div class="step-num">01</div>
+            <h4>Contrato firmado</h4>
+            <p>Al registrar un nuevo sponsor en SponsorOS, el módulo SponsKit detecta la oportunidad y propone el envío de una Welcome Box.</p>
+          </div>
+          <div class="step-card">
+            <span class="step-badge">2-5 min</span>
+            <div class="step-num">02</div>
+            <h4>Configuras el kit</h4>
+            <p>Seleccionas el tipo de kit, subes los logos, eliges colores de marca y añades el nombre del receptor. Los datos del directivo se toman del CRM.</p>
+          </div>
+          <div class="step-card">
+            <span class="step-badge">24-36h</span>
+            <div class="step-num">03</div>
+            <h4>Producción y packing</h4>
+            <p>Nuestros proveedores producen el kit, montan la caja personalizada e imprimen la carta de bienvenida. Sin que tengas que gestionar nada.</p>
+          </div>
+          <div class="step-card">
+            <span class="step-badge">24h en ES</span>
+            <div class="step-num">04</div>
+            <h4>Entrega y tracking</h4>
+            <p>El carrier recoge y entrega en la dirección del directivo. Tú sigues el estado en tiempo real desde el panel de Mis Pedidos.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- CATALOG -->
+      <div class="inner-section" id="catalogo">
+        <div class="section-header">
+          <div class="section-title">Catálogo de kits</div>
+          <div class="section-sub">Personaliza cada producto con los logos de tu club y del sponsor.</div>
+        </div>
+        <div class="cat-tabs">
+          <button class="cat-tab active" onclick="filterProds('todos',this)">Todos</button>
+          <button class="cat-tab" onclick="filterProds('welcome',this)">Welcome Boxes</button>
+          <button class="cat-tab" onclick="filterProds('activation',this)">Activation Packs</button>
+          <button class="cat-tab" onclick="filterProds('nfc',this)">NFC Credentials</button>
+        </div>
+        <div class="products-grid" id="prodsGrid">
+
+          <div class="product-card" data-cat="welcome">
+            <div class="prod-img" style="background:#EEF4FF">🎁</div>
+            <div class="prod-body">
+              <div class="prod-cat">Welcome Box</div>
+              <div class="prod-name">Essential</div>
+              <div class="prod-desc">Kit de bienvenida para nuevos sponsors. Impacto emocional desde el primer día.</div>
+              <div class="prod-includes">
+                <div class="inc-item">Bufanda oficial Club + Sponsor</div>
+                <div class="inc-item">Carta bienvenida personalizada</div>
+                <div class="inc-item">2 entradas de temporada</div>
+              </div>
+              <div class="prod-footer">
+                <div class="prod-price">€85 <small>/ ud</small></div>
+                <button class="btn-order" onclick="openModal('essential')">Ver detalle</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="product-card featured" data-cat="welcome">
+            <div class="prod-img" style="background:#EEF4FF">🏆
+              <span class="feat-badge">Más vendido</span>
+            </div>
+            <div class="prod-body">
+              <div class="prod-cat">Welcome Box</div>
+              <div class="prod-name">Premium</div>
+              <div class="prod-desc">La experiencia completa para directivos y ejecutivos de alto perfil.</div>
+              <div class="prod-includes">
+                <div class="inc-item">Jersey con nombre del receptor</div>
+                <div class="inc-item">Acreditación VIP impresa</div>
+                <div class="inc-item">Bufanda + Gorra cobranded</div>
+              </div>
+              <div class="prod-footer">
+                <div class="prod-price">€195 <small>/ ud</small></div>
+                <button class="btn-order" onclick="openModal('premium')">Ver detalle</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="product-card" data-cat="welcome">
+            <div class="prod-img" style="background:#F5F3FF">💼</div>
+            <div class="prod-body">
+              <div class="prod-cat">Welcome Box</div>
+              <div class="prod-name">Executive</div>
+              <div class="prod-desc">Para patrocinadores premium. NFC integrado y packaging de nivel lujo.</div>
+              <div class="prod-includes">
+                <div class="inc-item">Todo lo de Premium</div>
+                <div class="inc-item">Acreditación NFC/RFID</div>
+                <div class="inc-item">Botella térmica personalizada</div>
+              </div>
+              <div class="prod-footer">
+                <div class="prod-price">€320 <small>/ ud</small></div>
+                <button class="btn-order" onclick="openModal('executive')">Ver detalle</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="product-card" data-cat="activation">
+            <div class="prod-img" style="background:#DCFCE7">👕</div>
+            <div class="prod-body">
+              <div class="prod-cat">Activation Pack</div>
+              <div class="prod-name">Fan Pack Básico</div>
+              <div class="prod-desc">Para activaciones en día de partido, sorteos o brand awareness.</div>
+              <div class="prod-includes">
+                <div class="inc-item">Gorra personalizada Club + Sponsor</div>
+                <div class="inc-item">Bufanda cobranded</div>
+                <div class="inc-item">Mínimo 5 unidades</div>
+              </div>
+              <div class="prod-footer">
+                <div class="prod-price">€28 <small>/ ud (×5)</small></div>
+                <button class="btn-order" onclick="openModal('fanpack')">Ver detalle</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="product-card" data-cat="activation">
+            <div class="prod-img" style="background:#FEF3C7">⭐</div>
+            <div class="prod-body">
+              <div class="prod-cat">Activation Pack</div>
+              <div class="prod-name">Influencer Pack</div>
+              <div class="prod-desc">Para creadores de contenido y embajadores. Diseñado para generar contenido orgánico.</div>
+              <div class="prod-includes">
+                <div class="inc-item">Camiseta Edición Especial</div>
+                <div class="inc-item">Gorra + Totebag cobranded</div>
+                <div class="inc-item">Acceso VIP digital (QR)</div>
+              </div>
+              <div class="prod-footer">
+                <div class="prod-price">€75 <small>/ ud (×5)</small></div>
+                <button class="btn-order" onclick="openModal('influencer')">Ver detalle</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="product-card" data-cat="nfc">
+            <div class="prod-img" style="background:#F0FFF4">📱</div>
+            <div class="prod-body">
+              <div class="prod-cat">NFC Credentials</div>
+              <div class="prod-name">Acreditación Premium</div>
+              <div class="prod-desc">Tarjetas con chip NFC/RFID para acceso a zonas VIP y hospitality.</div>
+              <div class="prod-includes">
+                <div class="inc-item">Tarjeta PVC o metal + chip NFC</div>
+                <div class="inc-item">Diseño 100% personalizable</div>
+                <div class="inc-item">Lanyard personalizado incluido</div>
+              </div>
+              <div class="prod-footer">
+                <div class="prod-price">€45 <small>/ ud (×10)</small></div>
+                <button class="btn-order" onclick="openModal('nfc')">Ver detalle</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <p style="text-align:center;margin-top:24px;font-size:13px;color:var(--text-light)">
+          ¿Necesitas un kit a medida? <a href="#contacto" style="color:var(--blue);font-weight:500">Contacta con soporte →</a>
+        </p>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- CONTACT / SUPPORT -->
+      <div class="inner-section" id="contacto" style="padding-bottom:48px">
+        <div class="section-header">
+          <div class="section-title">Soporte y solicitudes a medida</div>
+          <div class="section-sub">¿Necesitas un kit personalizado, tienes una incidencia o quieres explorar el módulo? Estamos aquí.</div>
+        </div>
+        <div class="contact-grid">
+          <div class="contact-info">
+            <div class="ci-item">
+              <div class="ci-icon">💬</div>
+              <div>
+                <h5>Chat en plataforma</h5>
+                <p>Soporte en tiempo real. L-V de 9:00 a 18:00 CET.<br>SLA &lt; 4h laborables.</p>
+              </div>
+            </div>
+            <div class="ci-item">
+              <div class="ci-icon">📧</div>
+              <div>
+                <h5>Email de soporte</h5>
+                <a href="mailto:sponskit@sponsoros.io">sponskit@sponsoros.io</a>
+                <p>Para incidencias logísticas y pedidos especiales.</p>
+              </div>
+            </div>
+            <div class="ci-item">
+              <div class="ci-icon">👤</div>
+              <div>
+                <h5>Account Manager</h5>
+                <p>Asignado para cuentas con facturación anual &gt;€5.000 en el módulo SponsKit.</p>
+              </div>
+            </div>
+            <div class="req-box">
+              <h5>Para empezar solo necesitas</h5>
+              <ul>
+                <li>Acceso activo a SponsorOS como club, marca o agencia</li>
+                <li>Al menos un patrocinio activo o en negociación</li>
+                <li>Logos del club y sponsor en formato .svg o .ai</li>
+              </ul>
+            </div>
+          </div>
+          <div class="contact-form-box">
+            <form id="contactForm" onsubmit="submitForm(event)">
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Nombre <span class="req">*</span></label>
+                  <input type="text" placeholder="Ana García" required>
+                </div>
+                <div class="form-group">
+                  <label>Cargo <span class="opt">(opcional)</span></label>
+                  <input type="text" placeholder="Dir. Patrocinios">
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Email corporativo <span class="req">*</span></label>
+                <input type="email" placeholder="ana@miclub.com" required>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Club / Empresa <span class="req">*</span></label>
+                  <input type="text" placeholder="Real Madrid CF" required>
+                </div>
+                <div class="form-group">
+                  <label>Teléfono <span class="opt">(opcional)</span></label>
+                  <input type="tel" placeholder="+34 600 000 000">
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Tipo de organización <span class="req">*</span></label>
+                <select required>
+                  <option value="" disabled selected>Selecciona</option>
+                  <option>Club deportivo profesional</option>
+                  <option>Club deportivo amateur</option>
+                  <option>Marca patrocinadora</option>
+                  <option>Agencia de marketing deportivo</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Kit de interés <span class="opt">(opcional)</span></label>
+                <select>
+                  <option value="" disabled selected>Selecciona un kit</option>
+                  <option>Welcome Box Essential (€85/ud)</option>
+                  <option>Welcome Box Premium (€195/ud)</option>
+                  <option>Welcome Box Executive (€320/ud)</option>
+                  <option>Fan Pack Básico (€28/ud)</option>
+                  <option>Influencer Pack (€75/ud)</option>
+                  <option>NFC Credentials (desde €12/ud)</option>
+                  <option>Kit a medida</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Mensaje <span class="opt">(opcional)</span></label>
+                <textarea placeholder="¿Para qué ocasión? ¿Cuántas unidades? ¿Hay fecha límite?"></textarea>
+              </div>
+              <p class="form-note">Tus datos se usarán únicamente para responder a tu consulta. <a href="#">Política de privacidad.</a></p>
+              <button type="submit" class="btn-primary" style="width:100%;justify-content:center;font-size:14px;padding:11px">
+                Enviar solicitud →
+              </button>
+            </form>
+            <div class="form-success" id="formSuccess">
+              <div style="font-size:40px">✅</div>
+              <h3>¡Solicitud enviada!</h3>
+              <p>Te responderemos en menos de 4 horas laborables a través de la plataforma o por email.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /page-content -->
+  </div><!-- /main -->
+</div><!-- /shell -->
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal" onclick="closeModalOverlay(event)">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="modalTitle">Welcome Box Premium</h3>
+      <button class="modal-close" onclick="document.getElementById('modal').classList.remove('open')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-img-area" id="modalImg">🏆</div>
+      <div class="modal-info">
+        <div class="modal-cat" id="modalCat">Welcome Box</div>
+        <div class="modal-price" id="modalPrice">€195 <small>/ unidad</small></div>
+        <div class="modal-desc" id="modalDesc"></div>
+        <h5>Incluye</h5>
+        <ul id="modalIncludes"></ul>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-ghost" onclick="document.getElementById('modal').classList.remove('open')">Cerrar</button>
+      <a href="#contacto" class="btn-primary" onclick="document.getElementById('modal').classList.remove('open')">Solicitar este kit →</a>
+    </div>
+  </div>
+</div>
+
+<script>
+const products = {
+  essential: { title:'Welcome Box Essential', cat:'Welcome Box', price:'€85', emoji:'🎁',
+    desc:'Kit de bienvenida para nuevos patrocinadores. Impacto emocional inmediato a precio accesible. Los datos del receptor se toman automáticamente del CRM de SponsorOS.',
+    inc:['Bufanda oficial Club + Sponsor personalizada','Carta bienvenida con nombre del receptor','2 entradas de temporada (partido a elegir)','Caja brandificada con logos club y sponsor','Envío 24h incluido (España peninsular)'] },
+  premium: { title:'Welcome Box Premium', cat:'Welcome Box', price:'€195', emoji:'🏆',
+    desc:'La experiencia completa para directivos y ejecutivos de alto perfil. Diseño premium, personalización profunda y presentación que genera recuerdo en el receptor.',
+    inc:['Jersey oficial con nombre del directivo impreso','Acreditación VIP impresa (formato tarjeta)','Bufanda + Gorra cobranded de temporada','Carta bienvenida con mensaje personalizado','Caja premium con tejido interior branded','Envío DHL Express 24h incluido'] },
+  executive: { title:'Welcome Box Executive', cat:'Welcome Box', price:'€320', emoji:'💼',
+    desc:'Para patrocinadores premium y relaciones de máxima relevancia estratégica. NFC integrado, packaging de lujo y experiencia de unboxing diseñada para impactar.',
+    inc:['Todo lo incluido en Welcome Box Premium','Acreditación NFC/RFID para acceso VIP configurada desde SponsorOS','Botella térmica premium personalizada','Packaging con acabado tejido de alta calidad','Opción de hand delivery premium en la misma ciudad'] },
+  fanpack: { title:'Fan Pack Básico', cat:'Activation Pack', price:'€28 / ud (mín. ×5)', emoji:'👕',
+    desc:'Ideal para activaciones masivas en día de partido, sorteos entre socios o acciones de brand awareness. Alta visibilidad a precio competitivo.',
+    inc:['Gorra personalizada con logos Club + Sponsor','Bufanda cobranded de temporada','Bolsa de tela personalizada (opcional, +€4/ud)','Personalización con nombre (+€3/ud)','Disponible desde 5 unidades por pedido'] },
+  influencer: { title:'Influencer Pack', cat:'Activation Pack', price:'€75 / ud (mín. ×5)', emoji:'⭐',
+    desc:'Diseñado para creadores de contenido, periodistas y embajadores de marca. El packaging y el contenido están diseñados para generar contenido orgánico en redes.',
+    inc:['Camiseta Edición Especial con nombre personalizado','Gorra cobranded de temporada','Totebag premium con diseño exclusivo','Acceso VIP digital mediante QR personalizado','Packaging estilo unboxing experience'] },
+  nfc: { title:'NFC Credentials Premium', cat:'NFC & Accesos', price:'€45 / ud (mín. ×10)', emoji:'📱',
+    desc:'Acreditaciones físicas con NFC/RFID integrado, configurables directamente desde SponsorOS. Control de acceso inteligente para zonas VIP y hospitality.',
+    inc:['Tarjeta PVC o metal con chip NFC/RFID','Diseño 100% personalizable desde la plataforma','Lanyard personalizado con logo del club incluido','Configuración de accesos desde SponsorOS','Control de zonas VIP, hospitality y vestuario'] }
+};
+
+function openModal(key) {
+  const p = products[key];
+  document.getElementById('modalTitle').textContent = p.title;
+  document.getElementById('modalCat').textContent = p.cat;
+  document.getElementById('modalPrice').innerHTML = p.price + ' <small>/ unidad</small>';
+  document.getElementById('modalImg').textContent = p.emoji;
+  document.getElementById('modalDesc').textContent = p.desc;
+  document.getElementById('modalIncludes').innerHTML = p.inc.map(i=>`<li>${i}</li>`).join('');
+  document.getElementById('modal').classList.add('open');
+}
+function closeModalOverlay(e) {
+  if (e.target === document.getElementById('modal')) document.getElementById('modal').classList.remove('open');
+}
+function filterProds(cat, btn) {
+  document.querySelectorAll('.cat-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.product-card').forEach(c => {
+    c.style.display = (cat === 'todos' || c.dataset.cat === cat) ? '' : 'none';
+  });
+}
+document.addEventListener('keydown', e => { if(e.key==='Escape') document.getElementById('modal').classList.remove('open'); });
+
+// Mobile sidebar
+const hamburgerBtn = document.getElementById('hamburgerBtn');
+const sidebar = document.getElementById('sidebar');
+const overlay = document.getElementById('sidebarOverlay');
+hamburgerBtn.addEventListener('click', () => { sidebar.classList.toggle('open'); overlay.classList.toggle('open'); });
+overlay.addEventListener('click', () => { sidebar.classList.remove('open'); overlay.classList.remove('open'); });
+
+function submitForm(e) {
+  e.preventDefault();
+  document.getElementById('contactForm').style.display = 'none';
+  document.getElementById('formSuccess').style.display = 'block';
+}
+</script>
+</body>
+</html>
